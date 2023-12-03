@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distance Vector Routing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Distance Vector Routing</h2>
+
+    <label for="numNodes">Enter the number of nodes: </label>
+    <input type="number" id="numNodes" min="2" required>
+
+    <button onclick="generateMatrix()">Generate Cost Matrix</button>
+
+    <div id="matrixInput" style="display:none;">
+        <h3>Enter the Cost Matrix (Enter 'inf' for infinity):</h3>
+        <table id="costMatrixTable"></table>
+        <button onclick="calculateRoutingTable()">Calculate Routing Table</button>
+    </div>
+
+    <div id="output" style="display:none;">
+        <h3>Routing Table:</h3>
+        <pre id="routingTableOutput"></pre>
+    </div>
+
+    <script>
+        function generateMatrix() {
+            const numNodes = parseInt(document.getElementById('numNodes').value);
+            const matrixInputDiv = document.getElementById('matrixInput');
+            const costMatrixTable = document.getElementById('costMatrixTable');
+
+            matrixInputDiv.style.display = 'block';
+
+            let tableHTML = '<tr><th></th>';
+
+            for (let i = 1; i <= numNodes; i++) {
+                tableHTML += `<th>Node ${i}</th>`;
+            }
+
+            tableHTML += '</tr>';
+
+            for (let i = 1; i <= numNodes; i++) {
+                tableHTML += `<tr><th>Node ${i}</th>`;
+
+                for (let j = 1; j <= numNodes; j++) {
+                    tableHTML += `<td><input type="text" id="cost${i}_${j}" /></td>`;
+                }
+
+                tableHTML += '</tr>';
+            }
+
+            costMatrixTable.innerHTML = tableHTML;
+        }
+
+        function calculateRoutingTable() {
+            const numNodes = parseInt(document.getElementById('numNodes').value);
+            const routingTableOutput = document.getElementById('routingTableOutput');
+            const costMatrix = [];
+
+            for (let i = 1; i <= numNodes; i++) {
+                costMatrix[i] = [];
+                for (let j = 1; j <= numNodes; j++) {
+                    const cost = document.getElementById(`cost${i}_${j}`).value;
+                    costMatrix[i][j] = cost === 'inf' ? Infinity : parseInt(cost);
+                }
+            }
+
+            const routingTable = initializeRoutingTable(numNodes, costMatrix);
+
+            let outputText = '';
+
+            for (let i = 1; i <= numNodes; i++) {
+                for (let j = 1; j <= numNodes; j++) {
+                    outputText += `Router ${i} to Node ${j} via Distance ${routingTable[i][j]}\n`;
+                }
+            }
+
+            routingTableOutput.textContent = outputText;
+
+            document.getElementById('output').style.display = 'block';
+        }
+
+        function initializeRoutingTable(numNodes, costMatrix) {
+            const routingTable = [];
+
+            for (let i = 1; i <= numNodes; ++i) {
+                routingTable[i] = [];
+                for (let j = 1; j <= numNodes; ++j) {
+                    routingTable[i][j] = costMatrix[i][j];
+                }
+            }
+
+            return routingTable;
+        }
+    </script>
+
+</body>
+</html>
